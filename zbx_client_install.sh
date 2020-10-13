@@ -60,13 +60,13 @@ function zabbix_client_setting(){
     sudo sh -c "openssl rand -hex 32 > /etc/zabbix/zabbix_agentd.psk"
     psk=`cat /etc/zabbix/zabbix_agentd.psk`
     # 修改 zabbix_agentd 設定檔
-    sed -i "s@Server=127.0.0.1@Server=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s@ServerActive=127.0.0.1@ServerActive=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s@Hostname=Zabbix server@Hostname=${q_client_hostname}@g" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s@\# TLSConnect=unencrypted@TLSConnect=psk@g" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s@\# TLSAccept=unencrypted@TLSAccept=psk@g" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s@\# TLSPSKIdentity=@TLSPSKIdentity=${q_psk_identity}@g" /etc/zabbix/zabbix_agentd.conf
-    sed -i "s@\# TLSPSKFile=@TLSPSKFile=/etc/zabbix/zabbix_agentd.psk@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@Server=127.0.0.1@Server=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@ServerActive=127.0.0.1@ServerActive=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@Hostname=Zabbix server@Hostname=${q_client_hostname}@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@\# TLSConnect=unencrypted@TLSConnect=psk@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@\# TLSAccept=unencrypted@TLSAccept=psk@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@\# TLSPSKIdentity=@TLSPSKIdentity=${q_psk_identity}@g" /etc/zabbix/zabbix_agentd.conf
+    sudo sed -i "s@\# TLSPSKFile=@TLSPSKFile=/etc/zabbix/zabbix_agentd.psk@g" /etc/zabbix/zabbix_agentd.conf
 }
 
 function ufw_setting(){
