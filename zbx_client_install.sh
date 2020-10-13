@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 function config_setting(){
     read -p "此系統是 docker 的 container 嗎? (y/n): (預設:n)" q_indocker
