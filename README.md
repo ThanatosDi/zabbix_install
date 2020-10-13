@@ -1,0 +1,73 @@
+# zabbix 5.0 自動化安裝腳本
+## server
+- [x] **啟動腳本參數設定 (config_setting)**
+    - [x] docker container
+    - [x] 更新系統套件
+    - [x] 是否安裝資料庫
+      - [x] MySQL
+      - [x] MariaDB
+    - [x] 資料庫名稱設定
+    - [x] 資料庫使用者帳號設定
+    - [x] 資料庫密碼設定
+    - [x] Zabbix-server 的 nginx server name
+- [x] **自動安裝前顯示所有設定供確認(config_show)**
+- [x] **docker container 處理 (docker)**
+  - [x] 套件索引更新
+  - [x] 安裝 sudo
+  - [x] 取消 `/etc/dpkg/dpkg.cfg.d/excludes` 中的 `Drop all documentation`
+- [x] **系統套件升級 (upgrade)**
+- [x] **資料庫安裝 (database_install)**
+  - [x] MySQL
+  - [x] MariaDB
+- [x] **判斷資料庫服務是否有啟動 (mysql_status_check)**
+- [x] **安裝 zabbix(zabbix_install)**
+  - [x] 新增官方套件庫(ubuntu deb)
+  - [x] 安裝 `zabbix-server-mysql`, `zabbix-frontend-php`, `zabbix-nginx-conf`, `nginx`
+- [x] **建立 zabbix 所需資料庫(database_insert)**
+  - [x] 當資料庫服務(mysql)未啟動時嘗試啟動 
+  - [x] 建立資料庫(database)
+  - [x] 建立使用者及設定其密碼
+  - [x] 設定使用者擁有上述資料庫(database)所有權限
+  - [x] 匯入 zabbix 所需資料表(tables)
+- [x] **zabbix 設定(zabbix_setting)**
+  - [x] 修改 `zabbix_server.conf` 設定檔
+    - [x] 資料庫(database)名稱
+    - [x] 資料庫使用者名稱
+    - [x] 資料庫使用者密碼
+  - [x] 修改 `nginx.conf` 的 `port`、`server_name`
+  - [x] 修改 `php-fpm.conf` 的 `date.timezone` 為 `Asia/Taipei`
+- [x] **啟動服務**
+  - [x] docker start service by `service`
+  - [x] start service by `systemctl`
+
+
+## agent
+- [x] **啟動腳本參數設定 (config_setting)**
+  - [x] 是否為 docker container
+  - [x] 是否更新系統套件
+  - [x] Zabbix Server IP 設定
+  - [x] Zabbix Client Hostname 設定(Server 端添加監控機器必須)
+  - [x] PSK唯一名稱設定(Server 端添加監控機器必須)
+- [x] **自動安裝前顯示所有設定供確認(config_show)**
+- [x] **docker container 處理 (docker)**
+  - [x] 套件索引更新
+  - [x] 安裝 sudo
+- [x] **系統套件升級 (upgrade)**
+- [x] **安裝 zabbix(zabbix_client_install)**
+  - [x] 新增官方套件庫(ubuntu deb)
+  - [x] 安裝 `zabbix-agent`
+- [x] **zabbix 設定(zabbix_client_setting)**
+  - [x] PSK 加密金鑰創建
+  - [x] 修改 `zabbix_agent.conf` 設定檔 
+    - [x] Server
+    - [x] ServerActive
+    - [x] Hostname
+    - [x] TLSConnect
+    - [x] TLSAccept
+    - [x] TLSPSKIdentity
+    - [x] TLSPSKFile
+- [x] 防火牆設定 (ufw_setting)
+  - [x] 限制 Server IP 訪問 TCP/10050
+- [x] 啟動服務
+  - [x] docker start by `service`
+  - [x] start service by `systemctl` and enable auto start
