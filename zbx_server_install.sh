@@ -130,12 +130,12 @@ function database_insert(){
 }
 
 function zabbix_setting(){
-    sed -i "s@DBName=zabbix@DBName=${zabbix_db_name}@g" /etc/zabbix/zabbix_server.conf
-    sed -i "s@DBUser=zabbix@DBUser=${zabbix_db_username}@g" /etc/zabbix/zabbix_server.conf
-    sed -i "s@\# DBPassword=@DBPassword=${zabbix_db_password}@g" /etc/zabbix/zabbix_server.conf
-    sed -i "s@#        listen          80;@        listen          80;@g" /etc/zabbix/nginx.conf
-    sed -i "s@#        server_name     example.com;@        server_name     ${server_name};@g" /etc/zabbix/nginx.conf
-    sed -i "s@; php_value\[date.timezone\] = Europe\/Riga@php_value\[date.timezone\] = Asia\/Taipei@g" /etc/zabbix/php-fpm.conf
+    sudo sed -i "s@DBName=zabbix@DBName=${zabbix_db_name}@g" /etc/zabbix/zabbix_server.conf
+    sudo sed -i "s@DBUser=zabbix@DBUser=${zabbix_db_username}@g" /etc/zabbix/zabbix_server.conf
+    sudo sed -i "s@\# DBPassword=@DBPassword=${zabbix_db_password}@g" /etc/zabbix/zabbix_server.conf
+    sudo sed -i "s@#        listen          80;@        listen          80;@g" /etc/zabbix/nginx.conf
+    sudo sed -i "s@#        server_name     example.com;@        server_name     ${server_name};@g" /etc/zabbix/nginx.conf
+    sudo sed -i "s@; php_value\[date.timezone\] = Europe\/Riga@php_value\[date.timezone\] = Asia\/Taipei@g" /etc/zabbix/php-fpm.conf
 }
 
 function start(){
