@@ -1,6 +1,5 @@
-#!/bin/bash
+#/bin/bash
 
-# 啟動腳本參數設定
 function config_setting(){
     read -p "此系統是 docker 的 container 嗎? (y/n): (預設:n)" q_indocker
     q_indocker="${q_indocker:-"n"}"
@@ -8,11 +7,20 @@ function config_setting(){
     read -p "是否更新系統套件? (y/n): (預設:y)" q_upgrade
     q_upgrade="${q_upgrade:-"y"}"
 
-    read -p "Zabbix Server IP 位置 : (預設:127.0.0.1)" q_server_ip
+    read -p "Zabbix Server IP 位置: (預設:127.0.0.1)" q_server_ip
     q_server_ip="${q_server_ip:-"127.0.0.1"}"
 
     read -p "Zabbix Client Hostname: " q_client_hostname
-    read -p "TLS PSK Identity PSK唯一名稱設定: " q_psk_identity
+
+    read -p "是否使用加密通訊: (預設: n)" q_psk_connect
+    q_psk_connect="${q_psk_connect:-"n"}"
+
+    echo $q_psk_connect
+
+    if [[ $q_psk_connect == "y" || $q_psk_connect == "Y" ]] 
+    then
+        read -p "TLS PSK Identity PSK唯一名稱設定: " q_psk_identity
+    fi
 
 }
 
@@ -22,7 +30,10 @@ function config_show(){
     echo "是否更新系統套件?: ${q_upgrade}"
     echo "Zabbix Server IP 位置: ${q_server_ip}"
     echo "Zabbix Client Hostname: ${q_client_hostname}"
-    echo "PSK Identity: ${q_psk_identity}"
+    if [[ $q_psk_connect=="y"|| $q_psk_connect=="Y" ]]
+    then
+        echo "PSK Identity: ${q_psk_identity}"
+    fi
     echo "==================================="
     read -p "請確認上方有無輸入錯誤，如無錯誤請按 [ENTER] 進入安裝程序，如錯誤請 Ctrl+C 終止程序"
 }
@@ -57,17 +68,23 @@ function zabbix_client_install(){
 }
 
 function zabbix_client_setting(){
-    # 建立 PSK 金鑰
-    sudo sh -c "openssl rand -hex 32 > /etc/zabbix/zabbix_agentd.psk"
-    psk=`cat /etc/zabbix/zabbix_agentd.psk`
+    if [[ $q_psk_connect == "y" || $q_psk_connect == "Y" ]] 
+    then
+        # 建立 PSK 金鑰
+        sudo sh -c "openssl rand -hex 32 > /etc/zabbix/zabbix_agentd.psk"
+        psk=`cat /etc/zabbix/zabbix_agentd.psk`
+    fi
     # 修改 zabbix_agentd 設定檔
-    sudo sed -i "s@Server=127.0.0.1@Server=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
-    sudo sed -i "s@ServerActive=127.0.0.1@ServerActive=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
-    sudo sed -i "s@Hostname=Zabbix server@Hostname=${q_client_hostname}@g" /etc/zabbix/zabbix_agentd.conf
-    sudo sed -i "s@\# TLSConnect=unencrypted@TLSConnect=psk@g" /etc/zabbix/zabbix_agentd.conf
-    sudo sed -i "s@\# TLSAccept=unencrypted@TLSAccept=psk@g" /etc/zabbix/zabbix_agentd.conf
-    sudo sed -i "s@\# TLSPSKIdentity=@TLSPSKIdentity=${q_psk_identity}@g" /etc/zabbix/zabbix_agentd.conf
-    sudo sed -i "s@\# TLSPSKFile=@TLSPSKFile=/etc/zabbix/zabbix_agentd.psk@g" /etc/zabbix/zabbix_agentd.conf
+    sed -i "s@Server=127.0.0.1@Server=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
+    sed -i "s@ServerActive=127.0.0.1@ServerActive=${q_server_ip}@g" /etc/zabbix/zabbix_agentd.conf
+    sed -i "s@Hostname=Zabbix server@Hostname=${q_client_hostname}@g" /etc/zabbix/zabbix_agentd.conf
+    if [[ $q_psk_connect == "y" || $q_psk_connect == "Y" ]] 
+    then
+        sed -i "s@\# TLSConnect=unencrypted@TLSConnect=psk@g" /etc/zabbix/zabbix_agentd.conf
+        sed -i "s@\# TLSAccept=unencrypted@TLSAccept=psk@g" /etc/zabbix/zabbix_agentd.conf
+        sed -i "s@\# TLSPSKIdentity=@TLSPSKIdentity=${q_psk_identity}@g" /etc/zabbix/zabbix_agentd.conf
+        sed -i "s@\# TLSPSKFile=@TLSPSKFile=/etc/zabbix/zabbix_agentd.psk@g" /etc/zabbix/zabbix_agentd.conf
+    fi
 }
 
 function ufw_setting(){
@@ -88,8 +105,8 @@ function start(){
     echo -e "Goto Zabbix server webui and add this host. \n
     ========================
     client hostname: ${q_client_hostname}
-    PSK Identity: ${q_psk_identity}
-    PSK key: ${psk}
+    PSK Identity: ${q_psk_identity:-"null"}
+    PSK key: ${psk:-"null"}
     ========================"
 }
 
